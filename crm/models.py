@@ -16,6 +16,10 @@ class Customer(models.Model):
                       (5, "市场推广")
                       )
     source = models.SmallIntegerField(choices=source_choices)
+    status_choices = ((0, "已报名"),
+                      (1, "未报名"),
+                      )
+    status = models.SmallIntegerField(choices=status_choices, default=1)
     referral_from = models.CharField(max_length=64, blank="True", null="True", verbose_name="转介绍人QQ")
     consult_course = models.ForeignKey("Course", verbose_name="咨询课程")
     content = models.TextField(verbose_name="咨询详情")
@@ -27,6 +31,10 @@ class Customer(models.Model):
     def __str__(self):
         return self.qq
 
+    class Meta:
+        verbose_name = "客户表"
+        verbose_name_plural = "客户表"
+
 
 class Tag(models.Model):
     """客户标签"""
@@ -35,11 +43,14 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "客户标签"
+        verbose_name_plural = "客户标签"
+
 
 class CustomerFollowUp(models.Model):
     """客户跟踪表"""
     customer = models.ForeignKey("Customer")
-    # method = models.CharField(max_length=32, blank="True", null="True", verbose_name="跟进方式")
     content = models.TextField(verbose_name="跟进内容")
     follower = models.ForeignKey("UserProfile")
     date = models.DateTimeField(auto_now_add=True)
@@ -56,6 +67,10 @@ class CustomerFollowUp(models.Model):
         # return"<%s : %s>" %(self.customer.qq, self.intention)
         return "<{self.customer.qq} : {self.intention}>".format(self=self)
 
+    class Meta:
+        verbose_name = "客户跟进记录"
+        verbose_name_plural = "客户跟进记录"
+
 
 class Course(models.Model):
     """课程信息表"""
@@ -67,6 +82,10 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "课程信息表"
+        verbose_name_plural = "课程信息表"
+
 
 class Branch(models.Model):
     """校区表"""
@@ -75,6 +94,10 @@ class Branch(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "校区表"
+        verbose_name_plural = "校区表"
 
 
 class ClassList(models.Model):
@@ -97,6 +120,8 @@ class ClassList(models.Model):
 
     class Meta:
         unique_together = ("branch", "course", "semester")
+        verbose_name = "班级表"
+        verbose_name_plural = "班级表"
 
 
 class CourseRecord(models.Model):
@@ -115,10 +140,12 @@ class CourseRecord(models.Model):
 
     class Meta:
         unique_together = ("from_class", "day_num")
+        verbose_name = "上课记录"
+        verbose_name_plural = "上课记录"
 
 
 class StudyRecord(models.Model):
-    """成绩记录"""
+    """学习记录"""
     student = models.ForeignKey("Enrollment")
     course_record = models.ForeignKey("CourseRecord")
     attendance_choices = ((0, "已签到"),
@@ -146,6 +173,11 @@ class StudyRecord(models.Model):
     def __str__(self):
         return "{self.student} {self.course_record} {self.score}".format(self=self)
 
+    class Meta:
+        unique_together = ("student", "course_record")
+        verbose_name = "学习记录表"
+        verbose_name_plural = "学习记录表"
+
 
 class Enrollment(models.Model):
     """报名表"""
@@ -161,6 +193,8 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ("customer", "enrolled_class")
+        verbose_name = "报名表"
+        verbose_name_plural = "报名表"
 
 
 class Payment(models.Model):
@@ -174,6 +208,10 @@ class Payment(models.Model):
     def __str__(self):
         return "{self.customer} {self.amount}".format(self=self)
 
+    class Meta:
+        verbose_name = "缴费记录表"
+        verbose_name_plural = "缴费记录表"
+
 
 class UserProfile(models.Model):
     """账号表"""
@@ -184,10 +222,28 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "账号表"
+        verbose_name_plural = "账号表"
+
 
 class Role(models.Model):
     """权限表"""
     name = models.CharField(max_length=32, unique=True)
+    menus = models.ManyToManyField("Menu", blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "权限表"
+        verbose_name_plural = "权限表"
+
+
+class Menu(models.Model):
+    """菜单"""
+    name = models.CharField(max_length=32)
+    url_name = models.CharField(max_length=64)
 
     def __str__(self):
         return self.name
