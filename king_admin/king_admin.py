@@ -1,4 +1,3 @@
-
 from crm import models
 
 enabled_admins = {}
@@ -10,12 +9,12 @@ class BaseAdmin():
 
 
 class CustomerAdmin(BaseAdmin):
-    list_display = ['qq', 'name']
+    list_display = ['qq', 'name', 'source', 'consultant', 'consult_course', 'date', 'status']
     list_filters = ['source', 'consultant', 'consult_course', 'status']
 
 
 class CustomerFollowUpAdmin(BaseAdmin):
-    list_display = ['customer','consultant','date']
+    list_display = ['customer', 'consultant', 'date']
 
 
 def register(model_class, admin_class=None):

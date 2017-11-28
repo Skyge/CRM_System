@@ -9,4 +9,6 @@ def index(request):
 
 def display_table_objs(request, app_name, table_name):
 
-    return render(request, "king_admin/table_objs.html")
+    admin_class = king_admin.enabled_admins[app_name][table_name]
+
+    return render(request, "king_admin/table_objs.html", {"admin_class": admin_class})
