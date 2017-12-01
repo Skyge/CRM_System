@@ -6,15 +6,17 @@ enabled_admins = {}
 class BaseAdmin():
     list_display = []
     list_filters = []
+    list_per_page = 20
 
 
 class CustomerAdmin(BaseAdmin):
-    list_display = ['qq', 'name', 'source', 'consultant', 'consult_course', 'date', 'status']
-    list_filters = ['source', 'consultant', 'consult_course', 'status']
+    list_display = ["id", "qq", "name", "source", "consultant", "consult_course", "date", "status"]
+    list_filters = ["source", "consultant", "consult_course", "status"]
+    list_per_page = 5
 
 
 class CustomerFollowUpAdmin(BaseAdmin):
-    list_display = ['customer', 'consultant', 'date']
+    list_display = ["customer", "consultant", "date"]
 
 
 def register(model_class, admin_class=None):
