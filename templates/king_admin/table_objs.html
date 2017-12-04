@@ -1,7 +1,6 @@
 {% extends "king_admin/table_index.html" %}
 {% load tags %}
 
-
 {% block container %}
     {{ admin_class.list_display }}
     <div class="panel panel-info">
@@ -11,17 +10,19 @@
         <div class="panel-body">
             <div class="row">
                 <form class="" method="get">
-                    {% for according in admin_class.list_filters %}
+                    {% for fielter_field in admin_class.list_filters %}
                         <div class="col-lg-2">
-                            <span>{{ according }}</span>
-                            {% render_filter_ele according admin_class filter_according %}
+                            <span>{{ fielter_field }}</span>
+                            {% render_filter_ele fielter_field admin_class filter_according %}
                         </div>
                     {% endfor %}
                     <button type="SUBMIT" class="btn btn-success">检索</button>
                     <hr>
                     <div class="row">
                         <div class="col-lg-2">
-                            <input type="search" name="_Q" class="form-control"style="margin-left: 15px">
+                            <input type="search" name="_q" class="form-control"
+                                   style="margin-left: 15px" value="{{ search_text }}"
+                                   placeholder="search by {{ admin_class.search_fields.0 }} ...">
                         </div>
                         <div class="col-lg-2">
                             <button type="SUBMIT" class="btn btn-success">search</button>
@@ -41,7 +42,7 @@
                 <tbody>
                     {% for obj in query_sets %}
                     <tr>
-                        {% build_table_row obj admin_class%}
+                        {% build_table_row request obj admin_class%}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -59,7 +60,7 @@
                     <!--{% for loop_counter in query_sets.paginator.page_range %}-->
                         <!--{% render_page_ele  loop_counter query_sets filter_according%}-->
                     <!--{% endfor %}-->
-                    {% build_paginator query_sets filter_according previous_orderby %}
+                    {% build_paginator query_sets filter_according previous_orderby search_text %}
                     {% if query_sets.has_next %}
                         <li class=""><a href="?page={{ query_sets.next_page_number }}">下页</a></li>
                     {% endif %}

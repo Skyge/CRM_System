@@ -111,8 +111,8 @@ class ClassList(models.Model):
     class_type = models.SmallIntegerField(choices=class_type_choices, verbose_name="班级类型")
     semester = models.PositiveSmallIntegerField(verbose_name="学期")
     teachers = models.ManyToManyField("UserProfile")
-    start_date = models.DateTimeField(verbose_name="开班日期")
-    end_date = models.DateTimeField(blank="True", null="True", verbose_name="结业日期")
+    start_date = models.DateField(verbose_name="开班日期")
+    end_date = models.DateField(blank="True", null="True", verbose_name="结业日期")
 
     def __str__(self):
         # return"%s %s %s" %(self.branch, self.course, self.semester)

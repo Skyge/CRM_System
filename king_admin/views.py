@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .utils import  table_filter, table_sort
+from .utils import  table_filter, table_sort, table_search
 from django.shortcuts import render
+from .forms import create_model_form
 from . import king_admin
 
 
@@ -10,11 +11,10 @@ def index(request):
 
 
 def display_table_objs(request, app_name, table_name):
-
     admin_class = king_admin.enabled_admins[app_name][table_name]
     object_list, filter_according = table_filter(request, admin_class)
+    object_list = table_search(request, admin_class, object_list)
     object_list, orderby_key = table_sort(request, admin_class, object_list)
-    print(orderby_key)
     paginator = Paginator(object_list, admin_class.list_per_page)  # Show 25 contacts per page
 
     page = request.GET.get('page')
@@ -33,3 +33,10 @@ def display_table_objs(request, app_name, table_name):
                                                           "orderby_key":orderby_key,
                                                           "previous_orderby":request.GET.get("o", "")
                                                           })
+
+
+def table_obj_change(request, app_name, table_name, obj_id):
+    admin_class = king_admin.enabled_admins[app_name][table_name]
+    model_form_class = create_model_form(request, admin_class)
+
+    return render(request, "king_admin/table_obj_change.html")

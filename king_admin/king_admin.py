@@ -6,12 +6,14 @@ enabled_admins = {}
 class BaseAdmin():
     list_display = []
     list_filters = []
+    search_fields = []
     list_per_page = 20
 
 
 class CustomerAdmin(BaseAdmin):
     list_display = ["id", "qq", "name", "source", "consultant", "consult_course", "date", "status"]
-    list_filters = ["source", "consultant", "consult_course", "status"]
+    list_filters = ["source", "consultant", "consult_course", "status", "date"]
+    search_fields = ["qq", "name", "consultant__name"]  # 直接关联到外键下的字段
     list_per_page = 5
 
 
