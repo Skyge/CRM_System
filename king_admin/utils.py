@@ -10,7 +10,9 @@ def table_filter(request, admin_class):
         if v:
             filter_conditions[k] = v
 
-    return admin_class.model.objects.filter(**filter_conditions), filter_conditions
+    return admin_class.model.objects.filter(**filter_conditions).\
+               order_by("-{}".format(admin_class.ordering if admin_class.ordering else "id")), \
+                                    filter_conditions
 
 
 def table_sort(request, admin_class, objs):

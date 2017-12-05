@@ -29,7 +29,7 @@ def build_table_row(request, obj, admin_class):
         if type(column_data).__name__ == "datetime":
             column_data = column_data.strftime("%Y-%m-%d %H:%M:%S")
         if index == 0:
-            column_data = "<a href='{request_path}/{obj_id}/change/'>{data}</a>".format(request_path=request.path,
+            column_data = "<a href='{request_path}{obj_id}/change/'>{data}</a>".format(request_path=request.path,
                                                                                         obj_id=obj.id,
                                                                                         data = column_data)
         row_ele += "<td>{}</td>".format(column_data)
@@ -144,3 +144,9 @@ def build_table_header_column(column, orderby_key, filter_according):
         sort_icon = ""
     ele = ele.format(filters=filters, orderby_key=orderby_key, column=column, sort_icon=sort_icon)
     return mark_safe(ele)
+
+
+@register.simple_tag
+def get_model_name(admin_class):
+
+    return admin_class.model._meta.verbose_name

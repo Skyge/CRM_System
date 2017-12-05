@@ -8,6 +8,7 @@ class BaseAdmin():
     list_filters = []
     search_fields = []
     list_per_page = 20
+    ordering = None
 
 
 class CustomerAdmin(BaseAdmin):
@@ -15,6 +16,7 @@ class CustomerAdmin(BaseAdmin):
     list_filters = ["source", "consultant", "consult_course", "status", "date"]
     search_fields = ["qq", "name", "consultant__name"]  # 直接关联到外键下的字段
     list_per_page = 5
+    # ordering = "qq"
 
 
 class CustomerFollowUpAdmin(BaseAdmin):
