@@ -9,12 +9,14 @@ class BaseAdmin():
     search_fields = []
     list_per_page = 20
     ordering = None
+    filter_horizontal = []
 
 
 class CustomerAdmin(BaseAdmin):
     list_display = ["id", "qq", "name", "source", "consultant", "consult_course", "date", "status"]
     list_filters = ["source", "consultant", "consult_course", "status", "date"]
     search_fields = ["qq", "name", "consultant__name"]  # 直接关联到外键下的字段
+    filter_horizontal = ("tags",)
     list_per_page = 5
     # ordering = "qq"
 

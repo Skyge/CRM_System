@@ -46,7 +46,10 @@ def table_obj_change(request, app_name, table_name, obj_id):
     else:
         form_obj = model_form_class(instance=obj)
 
-    return render(request, "king_admin/table_obj_change.html", {"form_obj": form_obj})
+    return render(request, "king_admin/table_obj_change.html", {"form_obj": form_obj,
+                                                                "admin_class": admin_class,
+                                                                "app_name": app_name,
+                                                                "table_name": table_name})
 
 
 def table_obj_add(request, app_name, table_name):
@@ -60,4 +63,13 @@ def table_obj_add(request, app_name, table_name):
             return redirect(request.path.replace("/add/", "/"))
     else:
         form_obj = model_form_class()
-    return render(request, "king_admin/table_obj_add.html", {"form_obj": form_obj})
+    return render(request, "king_admin/table_obj_add.html", {"form_obj": form_obj,
+                                                             "admin_class": admin_class})
+
+
+def table_obj_delete(request, app_name, table_name, obj_id):
+    admin_class = king_admin.enabled_admins[app_name][table_name]
+    obj = admin_class.model.objects.get(id=obj_id)
+
+    return render(request, "king_admin/table_obj_delete.html", {"obj": obj,
+                                                                "admin_class": admin_class})

@@ -31,7 +31,7 @@ def build_table_row(request, obj, admin_class):
         if index == 0:
             column_data = "<a href='{request_path}{obj_id}/change/'>{data}</a>".format(request_path=request.path,
                                                                                         obj_id=obj.id,
-                                                                                        data = column_data)
+                                                                                        data=column_data)
         row_ele += "<td>{}</td>".format(column_data)
     return mark_safe(row_ele)
 
@@ -53,12 +53,6 @@ def build_paginator(query_sets, filter_according, previous_orderby,  search_text
                 ele_class = "active"
             page_btns += '''<li class="%s"><a href="?page=%s%s&o=%s&_q=%s">%s</a></li>'''  \
                          % (ele_class, page_num, filters, previous_orderby, search_text, page_num)
-        # elif abs(query_sets.number - page_num) <= 1:
-        #     ele_class = ""
-        #     if query_sets.number == page_num:
-        #         added_dot_ele = False
-        #         ele_class = "active"
-        #     page_btns += '''<li class="%s"><a href="?page=%s%s">%s</a></li>''' % (ele_class, page_num, filters, page_num)
         else:
             if not added_dot_ele:
                 page_btns += '''<li ><a >...</a></li>'''
@@ -150,3 +144,29 @@ def build_table_header_column(column, orderby_key, filter_according):
 def get_model_name(admin_class):
 
     return admin_class.model._meta.verbose_name
+
+
+@register.simple_tag
+def get_m2m_obj_list(admin_class, field, form_obj):
+    """返回m2m所有待选数据"""
+    field_obj = getattr(admin_class.model, field.name)
+    all_obj_list = field_obj.rel.to.objects.all()
+
+    if form_obj.instance.id:
+        obj_instance_field = getattr(form_obj.instance, field.name)
+        selected_obj_list = obj_instance_field.all()
+    else:       # 代表这是在创建一天新的记录
+        return  all_obj_list
+    standby_obj_list = []
+    for obj in all_obj_list:
+        if obj not in selected_obj_list:
+            standby_obj_list.append(obj)
+    return standby_obj_list
+
+
+@register.simple_tag
+def get_m2m_selected_obj_list(form_obj, field):
+    """返回m2m已选中的数据"""
+    if form_obj.instance.id:
+        field_obj = getattr(form_obj.instance, field.name)
+        return field_obj.all()
