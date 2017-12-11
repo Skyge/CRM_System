@@ -70,6 +70,12 @@ def table_obj_add(request, app_name, table_name):
 def table_obj_delete(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     obj = admin_class.model.objects.get(id=obj_id)
+    if request.method == "POST":
+        obj.delete()
+        return redirect("/king_admin/%s/%s/" % (app_name, table_name))
 
     return render(request, "king_admin/table_obj_delete.html", {"obj": obj,
-                                                                "admin_class": admin_class})
+                                                                "admin_class": admin_class,
+                                                                "app_name": app_name,
+                                                                "table_name": table_name
+                                                                })
