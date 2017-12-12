@@ -22,17 +22,38 @@
                     <button type="SUBMIT" class="btn btn-success">检索</button>
                     <hr>
                     <div class="row">
-                        <div class="col-lg-2">
+
+                        <div class="col-lg-3">
                             <input type="search" name="_q" class="form-control"
                                    style="margin-left: 15px" value="{{ search_text }}"
                                    placeholder="search by {{ admin_class.search_fields.0 }} ...">
                         </div>
                         <div class="col-lg-2">
-                            <button type="SUBMIT" class="btn btn-success">search</button>
+                            <button type="SUBMIT" class="btn btn-success" style="margin-left: 15px">
+                                search
+                            </button>
                         </div>
                     </div>
                 </form>
+                <div class="row" style="margin-top: 10px">
+                    <form onsubmit="return ActionSubmit(this)" method="POST">{% csrf_token %}
+                        <div class="col-lg-2">
+                            <select id="action_list" name="action" class="form-control" style="margin-left: 15px">
+                                <option value="">----</option>
+                                {% for action in admin_class.actions %}
+                                <option value="{{ action }}">
+                                    {% get_action_verbose_name admin_class action %}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-lg-1">
+                            <button type="submit" class="btn">GO</button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -84,6 +105,26 @@
             }
         }
 
+        function ActionSubmit(form_ele) {
+            var selected_ids = [];
+            $("input[tag='obj_checkbox']:checked").each(function (){
+                selected_ids.push( $(this).val());
+            })
+            var selected_action = $("#action_list").val();
+            if (selected_ids.length == 0){
+                alert ("No object got selected!");
+                return
+            }
+            if (!selected_action){
+                alert ("No action got selected!");
+            }
+
+
+            var selected_ids_ele = "<input  name='selected_ids' " + "type='hidden' value='" + selected_ids.toString() + "' >"
+            $(form_ele).append(selected_ids_ele);
+
+            return true;
+        }
     </script>
 
 {% endblock %}

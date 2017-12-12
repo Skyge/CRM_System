@@ -12,6 +12,20 @@ def index(request):
 
 def display_table_objs(request, app_name, table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
+
+    if request.method == "POST":
+        selected_ids = request.POST.get("selected_ids")
+        action = request.POST.get("action")
+        if selected_ids:
+            selected_objs = admin_class.model.objects.filter(id__in=selected_ids.split(","))
+        else:
+            raise KeyError("No objects got selected!")
+        if hasattr(admin_class, action):
+            action_func = getattr(admin_class, action)
+            request._admin_action = action
+            return action_func(request, selected_objs)
+
+
     object_list, filter_according = table_filter(request, admin_class)
     object_list = table_search(request, admin_class, object_list)
     object_list, orderby_key = table_sort(request, admin_class, object_list)
