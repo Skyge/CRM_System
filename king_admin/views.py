@@ -54,6 +54,7 @@ def table_obj_change(request, app_name, table_name, obj_id):
     model_form_class = create_model_form(request, admin_class)
     obj = admin_class.model.objects.get(id=obj_id)
     if request.method == "POST":
+
         form_obj = model_form_class(request.POST, instance=obj)
         if form_obj.is_valid():
             form_obj.save()

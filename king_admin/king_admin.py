@@ -1,4 +1,5 @@
 from crm import models
+from django.forms import ValidationError
 from django.shortcuts import render, redirect
 
 enabled_admins = {}
@@ -29,6 +30,10 @@ class BaseAdmin():
                                                                     "action": request._admin_action
                                                                     })
 
+    def default_form_validation(self, obj):
+        """允许用户可以自定义表单验证"""
+        pass
+
 
 class CustomerAdmin(BaseAdmin):
     list_display = ["id", "qq", "name", "source", "consultant", "consult_course", "date", "status"]
@@ -36,11 +41,20 @@ class CustomerAdmin(BaseAdmin):
     search_fields = ["qq", "name", "consultant__name"]  # 直接关联到外键下的字段
     filter_horizontal = ("tags",)
     list_per_page = 5
+    readonly_fields = ["qq", "consultant"]
     actions = ["delete_selected_objs", "test"]
 
     def test(self, request, querysets):
         print("Testing")
     test.display_name = "测试"
+
+    def default_form_validation(self, obj):
+        consult_content = obj.cleaned_data.get("content", "")
+        if len(consult_content) < 15:
+            return ValidationError(
+                    ("Field %(field)s 咨询记录内容不能少于15个字符"),
+                    code = "invalid",
+                    params = {"field": "content"},)
 
 
 class CustomerFollowUpAdmin(BaseAdmin):
