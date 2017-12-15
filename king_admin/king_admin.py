@@ -30,7 +30,7 @@ class BaseAdmin():
                                                                     "action": request._admin_action
                                                                     })
 
-    def default_form_validation(self, obj):
+    def default_form_validation(self):
         """允许用户可以自定义表单验证"""
         pass
 
@@ -41,20 +41,25 @@ class CustomerAdmin(BaseAdmin):
     search_fields = ["qq", "name", "consultant__name"]  # 直接关联到外键下的字段
     filter_horizontal = ("tags",)
     list_per_page = 5
-    readonly_fields = ["qq", "consultant"]
+    readonly_fields = ["qq", "consultant", "tags"]
     actions = ["delete_selected_objs", "test"]
 
     def test(self, request, querysets):
         print("Testing")
     test.display_name = "测试"
 
-    def default_form_validation(self, obj):
-        consult_content = obj.cleaned_data.get("content", "")
+    def default_form_validation(self):
+        consult_content = self.cleaned_data.get("content", "")
         if len(consult_content) < 15:
             return ValidationError(
                     ("Field %(field)s 咨询记录内容不能少于15个字符"),
                     code = "invalid",
                     params = {"field": "content"},)
+
+    def clean_name(self):
+        if not self.cleaned_data["name"]:
+            self.add_error("name", "can not be null!!!")
+
 
 
 class CustomerFollowUpAdmin(BaseAdmin):
@@ -64,9 +69,9 @@ class CustomerFollowUpAdmin(BaseAdmin):
 def register(model_class, admin_class=None):
     if model_class._meta.app_label not in enabled_admins:
         enabled_admins[model_class._meta.app_label] = {}
-    admin_obj = admin_class()
-    admin_obj.model = model_class     # 绑定model 对象和admin 类
-    enabled_admins[model_class._meta.app_label][model_class._meta.model_name] = admin_obj
+    #admin_obj = admin_class()
+    admin_class.model = model_class     # 绑定model 对象和admin 类
+    enabled_admins[model_class._meta.app_label][model_class._meta.model_name] = admin_class
 
 
 register(models.Customer, CustomerAdmin)
