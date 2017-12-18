@@ -13,13 +13,18 @@ class BaseAdmin():
     ordering = None
     filter_horizontal = []
     actions = ["delete_selected_objs", ]
+    readonly_table = False
 
     def delete_selected_objs(self, request, querysets):
-        print("--->delete_selected_objs", self, request, querysets)
         app_name = self.model._meta.app_label
         table_name = self.model._meta.model_name
+        if self.readonly_table:
+            errors = {"readonly_table": " This table is readonly, can not be modified or deleted!"}
+        else:
+            errors = {}
         if request.POST.get("delete_confirm") == "yes":
-            querysets.delete()
+            if not self.readonly_table:
+                querysets.delete()
             return redirect("/king_admin/%s/%s/" % (app_name, table_name))
         selected_ids = ','.join([str(i.id) for i in querysets])
         return render(request, "king_admin/table_obj_delete.html", {"objs": querysets,
@@ -27,7 +32,8 @@ class BaseAdmin():
                                                                     "app_name": app_name,
                                                                     "table_name": table_name,
                                                                     "selected_ids": selected_ids,
-                                                                    "action": request._admin_action
+                                                                    "action": request._admin_action,
+                                                                    "errors": errors
                                                                     })
 
     def default_form_validation(self):
@@ -43,6 +49,7 @@ class CustomerAdmin(BaseAdmin):
     list_per_page = 5
     readonly_fields = ["qq", "consultant", "tags"]
     actions = ["delete_selected_objs", "test"]
+    readonly_table = True
 
     def test(self, request, querysets):
         print("Testing")

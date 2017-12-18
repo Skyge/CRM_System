@@ -2,4 +2,15 @@
 
 {% block page-content %}
     客户库
+
+<div id="content"></div>
+
+
+{% endblock %}
+{% block bottom-js %}
+<script>
+    $(document).ready(function(){
+        $("#content").load("/king_admin/crm/customer");
+        })
+</script>
 {% endblock %}

@@ -67,6 +67,7 @@ def table_obj_change(request, app_name, table_name, obj_id):
 
 def table_obj_add(request, app_name, table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
+    admin_class.is_add_form = True
     model_form_class = create_model_form(request, admin_class)
 
     if request.method == "POST":
@@ -83,12 +84,17 @@ def table_obj_add(request, app_name, table_name):
 def table_obj_delete(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     obj = admin_class.model.objects.get(id=obj_id)
+    if admin_class.readonly_table:
+        errors = {"readonly_table": "table is readonly, obj [{}] can not be deleted".format(obj)}
+    else:
+        errors = {}
     if request.method == "POST":
-        obj.delete()
-        return redirect("/king_admin/%s/%s/" % (app_name, table_name))
-
+        if not admin_class.readonly_table:
+            obj.delete()
+            return redirect("/king_admin/%s/%s/" % (app_name, table_name))
     return render(request, "king_admin/table_obj_delete.html", {"obj": obj,
                                                                 "admin_class": admin_class,
                                                                 "app_name": app_name,
-                                                                "table_name": table_name
+                                                                "table_name": table_name,
+                                                                "errors": errors
                                                                 })

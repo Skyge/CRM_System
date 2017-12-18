@@ -30,7 +30,7 @@
                     <div class="col-md-5">
                         {% get_m2m_obj_list admin_class field  form_obj as m2m_obj_list %}
                         <select id="id_{{ field.name }}_from" multiple class="filter-select-box">
-                            {% if field_name in admin_class.readonly_fields %}
+                            {% if field.name in admin_class.readonly_fields and not admin_class.is_add_form %}
                                 {% for obj in m2m_obj_list %}
                                     <option value="{{ obj.id }}" disabled>{{ obj }}</option>
                                 {% endfor %}
@@ -47,7 +47,7 @@
                     <div class="col-md-5">
                         {% get_m2m_selected_obj_list form_obj field  as selected_obj_list %}
                         <select tag="chosen_list" id="id_{{ field.name }}_to" name="{{ field.name }}" multiple class="filter-select-box">
-                            {% if field_name in admin_class.readonly_fields %}
+                            {% if field.name in admin_class.readonly_fields and not admin_class.is_add_form %}
                                 {% for obj in selected_obj_list %}
                                     <option value="{{ obj.id }}" disabled>{{ obj }}</option>
                                 {% endfor %}
@@ -60,12 +60,12 @@
                     </div>
                 {% else %}
                     {{ field }}
-                    <span style="color: red">{{ field.errors }}</span>
+                    <span style="color: red">{{ field.errors.as_text }}</span>
                 {% endif %}
             </div>
         </div>
         {% endfor %}
-
+        {% if not admin_class.readonly_table %}
         <div class="form-group">
             {% block obj_delete %}
             <div class="col-sm-2 ">
@@ -79,6 +79,7 @@
                 <button type="submit" class="btn btn-success pull-right">Save</button>
             </div>
         </div>
+        {% endif %}
     </form>
 
 <script>
