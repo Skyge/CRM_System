@@ -73,6 +73,11 @@ class CustomerFollowUpAdmin(BaseAdmin):
     list_display = ["customer", "consultant", "date"]
 
 
+class UserProfileAdmin(BaseAdmin):
+    list_display = ("email", "name")
+    readonly_fields = ("password")
+
+
 def register(model_class, admin_class=None):
     if model_class._meta.app_label not in enabled_admins:
         enabled_admins[model_class._meta.app_label] = {}
@@ -83,3 +88,4 @@ def register(model_class, admin_class=None):
 
 register(models.Customer, CustomerAdmin)
 register(models.CustomerFollowUp, CustomerFollowUpAdmin)
+register(models.UserProfile, UserProfileAdmin)

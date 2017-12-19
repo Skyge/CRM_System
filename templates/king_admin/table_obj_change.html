@@ -60,6 +60,7 @@
                     </div>
                 {% else %}
                     {{ field }}
+                    <span style="color: grey">{{ field.help_text }}</span>
                     <span style="color: red">{{ field.errors.as_text }}</span>
                 {% endif %}
             </div>

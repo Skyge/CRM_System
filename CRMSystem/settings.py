@@ -135,3 +135,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "statics"),
     #'/var/www/static/',
 ]
+
+AUTH_USER_MODEL = "crm.UserProfile"
