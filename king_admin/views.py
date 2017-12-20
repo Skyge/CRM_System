@@ -104,10 +104,23 @@ def password_reset(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     model_form_class = create_model_form(request, admin_class)
     obj = admin_class.model.objects.get(id=obj_id)
+    errors = {}
+    if request.method == "POST":
+        _password1 = request.POST.get("password1")
+        _password2 = request.POST.get("password2")
+        if _password1 == _password2:
+            if len(_password1) > 5:
+                obj.set_password(_password1)
+                obj.save()
+                return redirect(request.path.rstrip("password/"))
+            else:
+                errors["password_too_short"] = "The password must be more than 5 letters!"
+        else:
+            errors["invalid_password"] = "Two passwords must be same!"
 
     return render(request, "king_admin/password_reset.html", {"obj": obj,
-                                                                "admin_class": admin_class,
-                                                                "app_name": app_name,
-                                                                "table_name": table_name,
-                                                                "errors": errors
+                                                              "admin_class": admin_class,
+                                                              "app_name": app_name,
+                                                              "table_name": table_name,
+                                                              "errors": errors
                                                                 })

@@ -42,7 +42,7 @@ class BaseAdmin():
 
 
 class CustomerAdmin(BaseAdmin):
-    list_display = ["id", "qq", "name", "source", "consultant", "consult_course", "date", "status"]
+    list_display = ["id", "qq", "name", "source", "consultant", "consult_course", "date", "status", "enroll"]
     list_filters = ["source", "consultant", "consult_course", "status", "date"]
     search_fields = ["qq", "name", "consultant__name"]  # 直接关联到外键下的字段
     filter_horizontal = ("tags",)
@@ -50,10 +50,16 @@ class CustomerAdmin(BaseAdmin):
     readonly_fields = ["qq", "consultant", "tags"]
     actions = ["delete_selected_objs", "test"]
     readonly_table = True
+    modelform_exclude_fields = []
 
     def test(self, request, querysets):
         print("Testing")
     test.display_name = "测试"
+
+    def enroll(self):
+
+        return '''<a href="{}/enrollment/">报名</a>'''.format(self.instance.id)
+    enroll.display_name = "报名链接"
 
     def default_form_validation(self):
         consult_content = self.cleaned_data.get("content", "")
@@ -75,7 +81,9 @@ class CustomerFollowUpAdmin(BaseAdmin):
 
 class UserProfileAdmin(BaseAdmin):
     list_display = ("email", "name")
-    readonly_fields = ("password")
+    readonly_fields = ("password",)
+    filter_horizontal = ("user_permissions", "groups")
+    modelform_exclude_fields = ["last_login",]
 
 
 def register(model_class, admin_class=None):

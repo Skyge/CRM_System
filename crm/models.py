@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser
+    BaseUserManager, AbstractBaseUser, PermissionsMixin
 )
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
@@ -265,7 +265,7 @@ class UserProfileManager(BaseUserManager):
         return user
 
 
-class UserProfile(AbstractBaseUser):
+class UserProfile(AbstractBaseUser, PermissionsMixin):
     """账号表"""
     email = models.EmailField(
         verbose_name='email address',
@@ -278,7 +278,7 @@ class UserProfile(AbstractBaseUser):
     name = models.CharField(max_length=32)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
-
+    roles = models.ManyToManyField("Role", blank=True)
     objects = UserProfileManager()
 
     USERNAME_FIELD = 'email'

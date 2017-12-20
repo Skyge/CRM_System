@@ -1,6 +1,7 @@
 from django import template
 from django.utils.safestring import mark_safe
 from django.utils.timezone import datetime, timedelta
+from django.core.exceptions import FieldDoesNotExist
 
 register = template.Library()
 
@@ -21,17 +22,25 @@ def get_query_sets(admin_class):
 def build_table_row(request, obj, admin_class):
     row_ele = ""
     for index, column in enumerate(admin_class.list_display):
-        field_obj = obj._meta.get_field(column)
-        if field_obj.choices:      # choice type
-            column_data = getattr(obj, "get_{}_display".format(column))()
-        else:
-            column_data = getattr(obj, column)       # 通过字符串获取方法实例
-        if type(column_data).__name__ == "datetime":
-            column_data = column_data.strftime("%Y-%m-%d %H:%M:%S")
-        if index == 0:
-            column_data = "<a href='{request_path}{obj_id}/change/'>{data}</a>".format(request_path=request.path,
-                                                                                        obj_id=obj.id,
-                                                                                        data=column_data)
+        try:
+            field_obj = obj._meta.get_field(column)
+            if field_obj.choices:      # choice type
+                column_data = getattr(obj, "get_{}_display".format(column))()
+            else:
+                column_data = getattr(obj, column)       # 通过字符串获取方法实例
+            if type(column_data).__name__ == "datetime":
+                column_data = column_data.strftime("%Y-%m-%d %H:%M:%S")
+            if index == 0:
+                column_data = "<a href='{request_path}{obj_id}/change/'>{data}</a>".format(request_path=request.path,
+                                                                                            obj_id=obj.id,
+                                                                                            data=column_data)
+        except FieldDoesNotExist as e:
+            if hasattr(admin_class, column):
+                column_func = getattr(admin_class, column)
+                admin_class.instance = obj
+                admin_class.request = request
+                column_data = column_func()
+
         row_ele += "<td>{}</td>".format(column_data)
     return mark_safe(row_ele)
 
@@ -118,11 +127,11 @@ def render_filter_ele(filter_field, admin_class, filter_according):
 
 
 @register.simple_tag
-def build_table_header_column(column, orderby_key, filter_according):
+def build_table_header_column(column, orderby_key, filter_according, admin_class):
     filters = ""
     for k, v in filter_according.items():
         filters += "&{}={}".format(k, v)
-    ele = '''<th> <a href = "?{filters}&o={orderby_key}" > {column}</a>{sort_icon}</th>'''
+    ele = '''<th> <a href="?{filters}&o={orderby_key}">{column}</a>{sort_icon}</th>'''
     if orderby_key:
         if orderby_key.startswith("-"):
             sort_icon = '''<span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>'''
@@ -136,7 +145,13 @@ def build_table_header_column(column, orderby_key, filter_according):
     else:
         orderby_key = column
         sort_icon = ""
-    ele = ele.format(filters=filters, orderby_key=orderby_key, column=column, sort_icon=sort_icon)
+    try:
+        column_verbose_name = admin_class.model._meta.get_field(column).verbose_name.capitalize()
+    except FieldDoesNotExist as e:
+        column_verbose_name = getattr(admin_class, column).display_name.capitalize()
+        ele = '''<th> <a href="javascript:void(0);" > {column}</a></th>'''.format(column=column_verbose_name)
+        return mark_safe(ele)
+    ele = ele.format(filters=filters, orderby_key=orderby_key, column=column_verbose_name, sort_icon=sort_icon)
     return mark_safe(ele)
 
 
