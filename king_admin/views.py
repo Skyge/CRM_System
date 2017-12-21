@@ -3,12 +3,15 @@ from .utils import  table_filter, table_sort, table_search
 from django.shortcuts import render, redirect
 from .forms import create_model_form
 from . import king_admin
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def index(request):
 
     return render(request, "king_admin/table_index.html", {"table_list": king_admin.enabled_admins})
 
 
+@login_required
 def display_table_objs(request, app_name, table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
 
@@ -48,6 +51,7 @@ def display_table_objs(request, app_name, table_name):
                                                           })
 
 
+@login_required
 def table_obj_change(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     model_form_class = create_model_form(request, admin_class)
@@ -65,6 +69,7 @@ def table_obj_change(request, app_name, table_name, obj_id):
                                                                 "table_name": table_name})
 
 
+@login_required
 def table_obj_add(request, app_name, table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     admin_class.is_add_form = True
@@ -81,6 +86,7 @@ def table_obj_add(request, app_name, table_name):
                                                              "admin_class": admin_class})
 
 
+@login_required
 def table_obj_delete(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     obj = admin_class.model.objects.get(id=obj_id)
@@ -100,6 +106,7 @@ def table_obj_delete(request, app_name, table_name, obj_id):
                                                                 })
 
 
+@login_required
 def password_reset(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]
     model_form_class = create_model_form(request, admin_class)

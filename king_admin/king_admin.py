@@ -49,7 +49,7 @@ class CustomerAdmin(BaseAdmin):
     list_per_page = 5
     readonly_fields = ["qq", "consultant", "tags"]
     actions = ["delete_selected_objs", "test"]
-    readonly_table = True
+    # readonly_table = True
     modelform_exclude_fields = []
 
     def test(self, request, querysets):
@@ -58,7 +58,7 @@ class CustomerAdmin(BaseAdmin):
 
     def enroll(self):
 
-        return '''<a href="{}/enrollment/">报名</a>'''.format(self.instance.id)
+        return '''<a href="/crm/customer/{}/enrollment/">报名</a>'''.format(self.instance.id)
     enroll.display_name = "报名链接"
 
     def default_form_validation(self):
