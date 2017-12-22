@@ -1,0 +1,81 @@
+{% extends "index.html" %}
+{% load crm_tags %}
+
+{% block body %}
+<div class="container col-lg-8 col-md-offset-2">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">AC | 报名</h3>
+        </div>
+        <div class="panel-body">
+            {% if status != 1%}
+            <span style="color: red">{{ customer_form.errors }}</span>
+            <form class="form-horizontal " role="form" method="post" onsubmit="return RegisterFormCheck()">
+                {% csrf_token %}
+                <span style="color: red">{{ enroll_form.errors }}</span>
+                {% for field in customer_form %}
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ field.label }}</label>
+                    <div class="col-sm-9">
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+                </hr>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">所报班级</label>
+                    <div class="col-sm-9">
+                        {{ enroll_obj.enrolled_class}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">课程费用</label>
+                    <div class="col-sm-9">
+                        {{ enroll_obj.enrolled_class.course.price}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">开课日期</label>
+                    <div class="col-sm-9">
+                        {{ enroll_obj.enrolled_class.start_date}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <pre style="height: 600px;overflow: auto">{% render_enroll_contract enroll_obj %}</pre>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-9">
+                        <input type="checkbox" name="contract_agreed">
+                        我已认真阅读该协议所有内容并接受所有条款
+                    </div>
+                </div>
+                <input type="submit" class="btn btn-info pull-right" value="提交">
+            </form>
+            {% else %}
+            <h2>报名表已提交，您的合同将尽快被审核，请耐心等待</h2>
+            {% endif %}
+        </div>
+        <hr>
+        <p>请上传身份证正反面照片</p>
+        <form action="/file-upload" class="dropzone">
+            <div class="fallback">
+                <input name="file" type="file" multiple />
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function  RegisterFormCheck(){
+        if ($("form :checkbox").prop("checked")){
+            $("form").find("[disabled]").removeAttr("disabled");
+            return true;
+        }else{
+            alert("必须同意该条款才可提交！");
+            return false;
+        }
+    }
+</script>
+
+{% endblock %}

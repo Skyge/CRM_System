@@ -13,6 +13,8 @@ class Customer(models.Model):
     qq = models.CharField(max_length=64, unique=True)
     qq_name = models.CharField(max_length=64, blank="True", null="True")
     phone = models.CharField(max_length=64, blank="True", null="True")
+    id_number = models.CharField(max_length=64, blank="True", null="True")
+    email = models.EmailField(verbose_name="常用邮箱", blank="True", null="True")
     source_choices = ((0, "转介绍"),
                       (1, "QQ群"),
                       (2, "官网"),
@@ -113,6 +115,7 @@ class ClassList(models.Model):
                           (1, "面授（周末）"),
                           (2, "网络班")
                           )
+    contract = models.ForeignKey("ContractTemplate", blank=True, null=True)
     class_type = models.SmallIntegerField(choices=class_type_choices, verbose_name="班级类型")
     semester = models.PositiveSmallIntegerField(verbose_name="学期")
     teachers = models.ManyToManyField("UserProfile")
@@ -334,3 +337,12 @@ class Menu(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ContractTemplate(models.Model):
+    """合同模板"""
+    name = models.CharField("合同名称", max_length=64, unique=True)
+    template = models.TextField()
+
+    def __str__(self):
+        return  self.name
