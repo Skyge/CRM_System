@@ -57,8 +57,11 @@ class CustomerAdmin(BaseAdmin):
     test.display_name = "测试"
 
     def enroll(self):
-
-        return '''<a href="/crm/customer/{}/enrollment/">报名</a>'''.format(self.instance.id)
+        if self.instance.status == 0:
+            link_name = "报名新课程"
+        else:
+            link_name = "报名"
+        return '''<a href="/crm/customer/{}/enrollment/">{}</a>'''.format(self.instance.id, link_name)
     enroll.display_name = "报名链接"
 
     def default_form_validation(self):

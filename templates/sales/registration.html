@@ -54,20 +54,58 @@
                 <input type="submit" class="btn btn-info pull-right" value="提交">
             </form>
             {% else %}
-            <h2>报名表已提交，您的合同将尽快被审核，请耐心等待</h2>
+                <h2>报名表已提交，您的合同将尽快被审核，请耐心等待</h2>
             {% endif %}
         </div>
         <hr>
-        <p>请上传身份证正反面照片</p>
-        <form action="/file-upload" class="dropzone">
-            <div class="fallback">
-                <input name="file" type="file" multiple />
+        {% if  status != 1 %}
+        <form id="filedropzone" method="post" action="{{ request.path }}" class="dropzone dz-clickable" >{% csrf_token %}
+            <div class="dz-default dz-message">
+                <div class="dz-icon icon-wrap icon-circle icon-wrap-md">
+                    <i class="fa fa-cloud-upload fa-3x"></i>
+                </div>
+                <div>
+                    <p class="dz-text">把证件信息拖放到这里</p>
+                    <p class="text-muted">最多可上传2张照片</p>
+                </div>
             </div>
         </form>
+        {% endif %}
+
     </div>
 </div>
+
+{% endblock %}
+{% block bottom-js %}
 <script>
+    $(document).ready(function () {
+         Dropzone.options.filedropzone = {
+          url:"{{ request.path }}",
+          paramName: "file", // The name that will be used to transfer the file
+          maxFilesize: 1, // MB,
+          addRemoveLinks:true,
+          maxFiles:5,
+          uploadMultiple:true,
+          accept: function(file, done) {
+            if (file.name == "justinbieber.jpg") {
+              done("Naha, you don't.");
+            }
+            else { done(); }
+          }
+        };
+
+        myDropzone.on("success", function(file,response) {
+          /* Maybe display some more file information on your page */
+          console.log('filex upload done...', response);
+      } )
+
+    })
     function  RegisterFormCheck(){
+        if (myDropzone.files.length < 2){
+            alert("必须至少上传2张图片!");
+            return false;
+        }
+
         if ($("form :checkbox").prop("checked")){
             $("form").find("[disabled]").removeAttr("disabled");
             return true;
@@ -76,6 +114,14 @@
             return false;
         }
     }
-</script>
 
+        Dropzone.autoDiscover = false;
+        myDropzone = new Dropzone("#filedropzone");
+        myDropzone.on("addedfile", function(file) {
+        /* Maybe display some more file information on your page */
+        console.log("-------",file)
+      });
+    console.log(myDropzone.files)
+
+</script>
 {% endblock %}
