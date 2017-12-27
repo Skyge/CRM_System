@@ -283,6 +283,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     roles = models.ManyToManyField("Role", blank=True)
     objects = UserProfileManager()
+    student_account = models.ForeignKey("Customer", verbose_name="关联学员账号", blank=True, null=True,
+                                        help_text="只有学员报名成功后，方可为其创建账号")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name']

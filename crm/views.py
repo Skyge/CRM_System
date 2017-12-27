@@ -126,6 +126,6 @@ def payment(request,enroll_id):
                 return redirect("/king_admin/crm/customer/")
         else:
             errors.append("缴费金额不得低于500元")
-    
+    print("errors",errors)
     return render(request,"sales/payment.html",{"enroll_obj":enroll_obj,
                                                 "errors":errors})

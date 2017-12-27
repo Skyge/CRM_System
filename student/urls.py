@@ -5,6 +5,6 @@ from . import views
 #app_name = 'student'
 
 urlpatterns = [
-    url(r'^$', views.index, name="stu_index"),
+    url(r'^$', views.student_my_classes, name="student_my_classes"),
 
 ]

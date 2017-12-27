@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
 
-def index(request):
+def student_my_classes(request):
 
-    return render(request, "student/index.html")
+    return render(request, "student/my_classes.html")

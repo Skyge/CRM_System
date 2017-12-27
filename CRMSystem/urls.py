@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^account/logout/$', views.account_logout, name="account_logout"),
     url(r'^student/', include("student.urls")),
     url(r'^king_admin/', include("king_admin.urls")),
+    url(r'^$', views.index),
 ]

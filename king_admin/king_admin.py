@@ -1,6 +1,7 @@
+
 from crm import models
 from django.forms import ValidationError
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 
 enabled_admins = {}
 
@@ -14,6 +15,7 @@ class BaseAdmin():
     filter_horizontal = []
     actions = ["delete_selected_objs", ]
     readonly_table = False
+    modelform_exclude_fields = []
 
     def delete_selected_objs(self, request, querysets):
         app_name = self.model._meta.app_label
@@ -89,6 +91,35 @@ class UserProfileAdmin(BaseAdmin):
     modelform_exclude_fields = ["last_login",]
 
 
+class CourseRecordAdmin(BaseAdmin):
+    list_display = ["from_class", "day_num", "teacher", "has_homework", "homework_title", "date"]
+
+    def initialize_study_records(self, request, queryset):
+        if len(queryset) > 1:
+            return HttpResponse("只能选择一个班级")
+        new_obj_list = []
+        for enroll_obj in queryset[0].from_class.enrollment_set.all():
+            new_obj_list.append(models.StudyRecord(
+                student=enroll_obj,
+                course_record=queryset[0],
+                attendance=0,
+                score=0
+            ))
+        try:
+            models.StudyRecord.objects.bulk_create(new_obj_list)
+        except Exception as e:
+            return HttpResponse("批量初始化学习记录失败，请检查该节课是否已经有对应的学习记录！")
+        return redirect("/king_admin/crm/studyrecord/?course_record={}".format(queryset[0].id))
+    initialize_study_records.display_name = "初始化本节所有学员的上课记录"
+    actions = ["initialize_study_records"]
+
+
+class StudyRecordAdmin(BaseAdmin):
+    list_display = ["student", "course_record", "attendance", "score", "date"]
+    list_filters = ["course_record", "attendance", "score"]
+    list_editable = ["score", "attendance"]
+
+
 def register(model_class, admin_class=None):
     if model_class._meta.app_label not in enabled_admins:
         enabled_admins[model_class._meta.app_label] = {}
@@ -100,3 +131,6 @@ def register(model_class, admin_class=None):
 register(models.Customer, CustomerAdmin)
 register(models.CustomerFollowUp, CustomerFollowUpAdmin)
 register(models.UserProfile, UserProfileAdmin)
+register(models.CourseRecord, CourseRecordAdmin)
+register(models.StudyRecord, StudyRecordAdmin)
+
