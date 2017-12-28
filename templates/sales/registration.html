@@ -94,6 +94,14 @@
           }
         };
 
+        Dropzone.autoDiscover = false;
+        myDropzone = new Dropzone("#filedropzone");
+        myDropzone.on("addedfile", function(file) {
+        /* Maybe display some more file information on your page */
+        console.log("-------",file)
+        });
+        console.log(myDropzone.files)
+
         myDropzone.on("success", function(file,response) {
           /* Maybe display some more file information on your page */
           console.log('filex upload done...', response);
@@ -115,13 +123,7 @@
         }
     }
 
-        Dropzone.autoDiscover = false;
-        myDropzone = new Dropzone("#filedropzone");
-        myDropzone.on("addedfile", function(file) {
-        /* Maybe display some more file information on your page */
-        console.log("-------",file)
-      });
-    console.log(myDropzone.files)
+
 
 </script>
 {% endblock %}

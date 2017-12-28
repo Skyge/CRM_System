@@ -123,7 +123,7 @@ class CourseRecordAdmin(admin.ModelAdmin):
 @admin.register(models.StudyRecord)
 class StudyRecordAdmin(admin.ModelAdmin):
     list_display = ["student", "course_record", "attendance", "score", "date"]
-    list_filter = ["course_record", "attendance", "score"]
+    list_filter = ["course_record", "attendance", "score", "course_record__from_class", "student"]
     list_editable = ["score", "attendance"]
 
 # Now register the new UserAdmin.

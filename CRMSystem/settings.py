@@ -141,3 +141,5 @@ AUTH_USER_MODEL = "crm.UserProfile"
 LOGIN_URL = "/account/login/"
 
 ENROLLED_DATA = "{}/enrolled_data/".format(BASE_DIR)
+
+HOMEWORK_DATA = "{}/homeworks/".format(BASE_DIR)

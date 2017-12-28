@@ -1,5 +1,5 @@
 {% extends "index.html" %}
-
+{% load student_tags %}
 {% block page-content %}
 <div class="panel panel-default">
     <div class="panel-heading">我的课程</div>
@@ -24,8 +24,11 @@
                 <td>{{ enroll_obj.enrolled_class.start_date }}</td>
                 <td>{{ enroll_obj.enrolled_class.end_date }}</td>
                 <td>已上{{ enroll_obj.enrolled_class.courserecord_set.all.count }}节</td>
-
-
+                <td>
+                    {% get_score enroll_obj request.user.student_account as score_data %}
+                    {{ score_data.score__sum }}
+                </td>
+                <td><a href="{% url 'study_records' enroll_obj.id %}">作业管理</a></td>
             </tr>
             {% endfor %}
             </tbody>
