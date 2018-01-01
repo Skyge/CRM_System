@@ -1,5 +1,6 @@
 from django.db.models import Q
 
+
 def table_filter(request, admin_class):
     """进行条件过滤并返回过滤后的数据"""
     filter_conditions = {}
@@ -35,5 +36,4 @@ def table_search(request, admin_class, object_list):
     for column in admin_class.search_fields:
         q_obj.children.append(("{}__contains".format(column), search_key))
     res = object_list.filter(q_obj)
-    return  res
-
+    return res

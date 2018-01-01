@@ -1,20 +1,25 @@
 from django.shortcuts import render, HttpResponse
 from crm import models
 from CRMSystem import settings
+from crm.permissions import permission
 
 import os, json, time
 
+
+@permission.check_permission
 def student_my_classes(request):
 
     return render(request, "student/my_classes.html")
 
 
+@permission.check_permission
 def study_records(request, enroll_obj_id):
     enroll_obj = models.Enrollment.objects.get(id=enroll_obj_id)
-    return render(request, "student/study_records.html", {"enroll_obj":enroll_obj})
+    return render(request, "student/study_records.html", {"enroll_obj": enroll_obj})
 
 
-def homework_detail(request,studyrecord_id):
+@permission.check_permission
+def homework_detail(request, studyrecord_id):
     studyrecord_obj = models.StudyRecord.objects.get(id=studyrecord_id)
     homework_path = "{base_dir}/{class_id}/{course_record_id}/{studyrecord_id}/". \
         format(base_dir=settings.HOMEWORK_DATA,
@@ -42,4 +47,3 @@ def homework_detail(request,studyrecord_id):
                                         "file_lists": file_lists}))
     return render(request, "student/homework_detail.html", {"studyrecord_obj": studyrecord_obj,
                                                             "file_lists": file_lists})
-

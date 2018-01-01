@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from .forms import create_model_form
 from . import king_admin
 from django.contrib.auth.decorators import login_required
+from crm.permissions import permission
 
 @login_required
 def index(request):
@@ -11,6 +12,7 @@ def index(request):
     return render(request, "king_admin/table_index.html", {"table_list": king_admin.enabled_admins})
 
 
+@permission.check_permission
 @login_required
 def display_table_objs(request, app_name, table_name):
     admin_class = king_admin.enabled_admins[app_name][table_name]
@@ -50,6 +52,7 @@ def display_table_objs(request, app_name, table_name):
                                                           })
 
 
+@permission.check_permission
 @login_required
 def table_obj_change(request, app_name, table_name, obj_id):
     admin_class = king_admin.enabled_admins[app_name][table_name]

@@ -252,7 +252,7 @@ class UserProfileManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self,email, name, password):
+    def create_superuser(self, email, name, password):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -300,21 +300,23 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     def __str__(self):              # __unicode__ on Python 2
         return self.email
 
-    def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
-        return True
-
-    def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
-        return True
-
     @property
     def is_staff(self):
-        "Is the user a member of staff?"
+        """Is the user a member of staff?"""
         # Simplest possible answer: All admins are staff
         return self.is_admin
+
+    class Meta:
+        permissions = (("can_fuck_him_to_death", "可以弄死产品"),
+                       ("can_access_my_course", "可以访问我的课程"),
+                       ("can_access_customer_list", "可以访问客户列表"),
+                       ("can_access_customer_detail", "可以访问客户详细"),
+                       ("can_access_studyrecords", "可以访问学习记录页面"),
+                       ("can_access_homework_detail", "可以访问作业详情页面"),
+                       ("can_upload_homework", "可以交作业"),
+                       ("access_kingadmin_table_obj_detail", "可以访问kingadmin每个表的对象"),
+                       ("change_kingadmin_table_obj_detail", "可以修改kingadmin每个表的对象"),
+                       )
 
 
 class Role(models.Model):
